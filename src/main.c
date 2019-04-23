@@ -47,8 +47,7 @@ TIM_HandleTypeDef htim11;
 int pulsado = 0;
 int volatile times = 0;
 int cercanos = 0;
-uint8_t data[] = "Hola Mundo";
-uint8_t rx_data[];
+uint8_t data[16];
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_tx;
@@ -117,7 +116,6 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim11);
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -127,20 +125,9 @@ int main(void)
     HAL_Delay(1000);
     GPIOB->ODR |= GPIO_ODR_OD6_Msk; //Encender Verde Coches
     GPIOA->ODR |= GPIO_ODR_OD7_Msk; //Encender Rojo Peatones
-    *data = "Caso 0";
-/*
-    HAL_UART_Transmit_IT(&huart2, data, sizeof(data)); //Mandar Pulsar Botón
     HAL_Delay(1000);
-    HAL_UART_Receive_IT(&huart2, rx_data, 4);
-    data = rx_data;
-*/
+    HAL_UART_Transmit(&huart1, "Rojo\n", 5, 1000); //Mandar Pulsar Botón
 
-    HAL_UART_Transmit(&huart1, data, sizeof(data), 1000); //Mandar Pulsar Botón
-    HAL_Delay(1000);
-    HAL_UART_Receive(&huart1, rx_data, sizeof(data), 1000);
-    *data = rx_data;
-
-    printf("Dato %s\n", data);
     if (pulsado == 1)
     {
       modo = 1;
@@ -159,11 +146,8 @@ int main(void)
           }
           GPIOB->ODR &= ~GPIO_ODR_OD6_Msk; //Apagar verde coches
           GPIOC->ODR |= GPIO_ODR_OD7_Msk;  //Encender amarillo coches
-          *data = "Caso 1";
-          HAL_UART_Transmit(&huart1, data, sizeof(data), 1000); //Mandar Espere Verde
-          HAL_UART_Receive(&huart1, rx_data, 4, 1000);
-          *data=rx_data;
-          printf("Dato %s\n", data);
+          HAL_UART_Transmit(&huart1, "Amarillo\n", 9, 1000); //Mandar Espere Verde
+          HAL_UART_Transmit(&huart1, 1, 1, 1000);
           HAL_Delay(3000);
           modo = 2;
           break;
@@ -173,16 +157,13 @@ int main(void)
           htim2.Instance->CCR1 = 25;
           GPIOA->ODR &= ~GPIO_ODR_OD7_Msk; //Apagamos rojo peatones
           GPIOA->ODR |= GPIO_ODR_OD6_Msk;  //Encender verde peatones
-          *data = "Caso 2";
-          HAL_UART_Transmit(&huart1, data, sizeof(data), 1000); //Mandar Pase
-          HAL_UART_Receive(&huart1, rx_data, 4, 1000);
-          *data = rx_data;
-          printf("Dato %s\n", data);
-          HAL_Delay(3000);
+          HAL_UART_Transmit(&huart1, "Verde\n", 6, 1000); //Mandar Pase
+          HAL_UART_Transmit(&huart1, 2, 1, 1000);
+          HAL_Delay(15000);
           modo = 3;
           break;
         case 3:
-          while (counter_parpadeo < 3)
+          while (counter_parpadeo < 15)
           {
             GPIOA->ODR &= ~GPIO_ODR_OD6_Msk; //Apagar verde peatones
             HAL_Delay(100);
@@ -273,7 +254,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 16679;
+  htim2.Init.Prescaler = 1679;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -495,12 +476,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-  HAL_UART_Transmit_IT(&huart2, data, sizeof(data));
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  HAL_UART_Receive_IT(&huart2, rx_data, 4);
+  HAL_UART_Transmit_IT(&huart1, data, sizeof(data));
 }
 
 void cambiarModoPin(int modo)

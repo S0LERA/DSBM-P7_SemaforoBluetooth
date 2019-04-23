@@ -4,3 +4,6 @@ Esta es una continuación de la práctica anterior. Se desea añadir al proyecto
 ## Versiones
 ### Versión 0.5
  - Esqueleto del código creado con STM32CUBEMX.
+
+### Versión 1.0
+ - Proyecto Completo.
