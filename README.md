@@ -7,3 +7,7 @@ Esta es una continuación de la práctica anterior. Se desea añadir al proyecto
 
 ### Versión 1.0
  - Proyecto Completo.
+
+### Versión 1.0
+ - Añadida Documentación.
+ - Eliminado un delay.

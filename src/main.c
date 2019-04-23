@@ -125,7 +125,6 @@ int main(void)
     HAL_Delay(1000);
     GPIOB->ODR |= GPIO_ODR_OD6_Msk; //Encender Verde Coches
     GPIOA->ODR |= GPIO_ODR_OD7_Msk; //Encender Rojo Peatones
-    HAL_Delay(1000);
     HAL_UART_Transmit(&huart1, "Rojo\n", 5, 1000); //Mandar Pulsar Botón
 
     if (pulsado == 1)
